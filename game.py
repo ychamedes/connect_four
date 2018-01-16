@@ -9,6 +9,7 @@ class Game:
     MIDDLE_OF_ROW = 3
     MIDDLE_OF_COLUMN = 2
     BLANK = "_"
+    INITIAL_MOVES = 0
 
     def __init__(self):
         # self.board = []
@@ -21,17 +22,20 @@ class Game:
         #     self.board.append(row_list)
 
         self.board = []
-        for r in range(self.ROWS):
+        for r in range(Game.ROWS):
             row_list = []
-            for c in range(self.COLUMNS):
-                row_list.append(self.BLANK)
+            for c in range(Game.COLUMNS):
+                row_list.append(Game.BLANK)
             self.board.append(row_list)
 
-        self.current_player = self.PLAYER_ONE
+        self.current_player = Game.PLAYER_ONE
+        self.number_of_moves = Game.INITIAL_MOVES
+        self.max_moves = Game.ROWS * Game.COLUMNS
 
     def make_move(self, column):
         print("make move")
         current_color = self.get_current_player()
+        self.number_of_moves += 1
         for row in range(self.ROWS):
             if self.board[row][column] != self.BLANK:
                 if row == 0:
@@ -39,9 +43,12 @@ class Game:
                     raise Exception("Illegal Move!")
                 else:
                     self.board[row - 1][column] = current_color
+                    break
             else:
                 if row == self.ROWS - 1:
                     self.board[row][column] = current_color
+                else:
+                    continue
 
     def get_winner(self):
         winner = None
@@ -49,6 +56,9 @@ class Game:
                 self.check_winner_vertical():
             print("winner")
             winner = self.current_player
+        elif self.number_of_moves == self.max_moves:
+            return Game.DRAW
+
         return winner
 
     def check_winner_horizontal(self):
@@ -146,7 +156,11 @@ class Game:
 
 
     def get_player_at(self, row, col):
-        pass
+        result = self.board[row][col]
+        if result == self.BLANK:
+            return None
+        else:
+            return result
 
     def get_current_player(self):
         return self.current_player
