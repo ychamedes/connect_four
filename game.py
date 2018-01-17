@@ -36,6 +36,8 @@ class Game:
         print("make move")
         current_color = self.get_current_player()
         self.number_of_moves += 1
+        if column not in range(self.COLUMNS):
+            raise Exception("Illegal Move!")
         for row in range(self.ROWS):
             if self.board[row][column] != self.BLANK:
                 if row == 0:
@@ -174,6 +176,7 @@ class Game:
             return
 
     def __repr__(self):
+        print('   '.join(str(x) for x in range(self.COLUMNS)))
         for row in self.board:
             print('   '.join(str(row[x]) for x in range(self.COLUMNS)))
             #print(row)
