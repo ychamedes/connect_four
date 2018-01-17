@@ -175,7 +175,8 @@ class Game:
 
     def __repr__(self):
         for row in self.board:
-            print(row)
+            print('   '.join(str(row[x]) for x in range(self.COLUMNS)))
+            #print(row)
 
 game1 = Game()
 game1.__repr__()
