@@ -1,5 +1,5 @@
-class Game:
 
+class Game:
     PLAYER_ONE = 0
     PLAYER_TWO = 1
     DRAW = 2
@@ -12,14 +12,6 @@ class Game:
     INITIAL_MOVES = 0
 
     def __init__(self):
-        # self.board = []
-        # index = 0
-        # for r in range(self.ROWS):
-        #     row_list = []
-        #     for c in range(self.COLUMNS):
-        #         row_list.append(index)
-        #         index += 1
-        #     self.board.append(row_list)
 
         self.board = []
         for r in range(Game.ROWS):
@@ -33,7 +25,6 @@ class Game:
         self.max_moves = Game.ROWS * Game.COLUMNS
 
     def make_move(self, column):
-        print("make move")
         current_color = self.get_current_player()
         self.number_of_moves += 1
         if column not in range(self.COLUMNS):
@@ -41,7 +32,6 @@ class Game:
         for row in range(self.ROWS):
             if self.board[row][column] != self.BLANK:
                 if row == 0:
-                    #pass
                     raise Exception("Illegal Move!")
                 else:
                     self.board[row - 1][column] = current_color
@@ -54,11 +44,12 @@ class Game:
 
     def get_winner(self):
         winner = None
-        if self.check_winner_horizontal() or self.check_winner_diagonal() or\
+        if self.check_winner_horizontal() or self.check_winner_diagonal() or \
                 self.check_winner_vertical():
             print("winner")
             winner = self.current_player
-        elif self.number_of_moves == self.max_moves:
+        if self.number_of_moves == self.max_moves:
+            print("draw")
             return Game.DRAW
 
         return winner
@@ -95,7 +86,7 @@ class Game:
                 #  spaces in the column.
                 while len(streak) < self.WIN_NUMBER:
                     if row[streak[0]] == row[streak[0] - 1]:
-                        streak.insert(0, streak[0]- 1)
+                        streak.insert(0, streak[0] - 1)
                     elif row[streak[-1]] == row[streak[-1] + 1]:
                         streak.append(streak[-1] + 1)
                     else:
@@ -113,15 +104,16 @@ class Game:
                 #  spaces in the column.
                 while len(streak) < self.WIN_NUMBER:
                     if diagonal[streak[0]] == diagonal[streak[0] - 1]:
-                        streak.insert(0, streak[0]- 1)
-                    elif diagonal[streak[-1]] == diagonal[streak[-1] + 1]:
-                        streak.append(streak[-1] + 1)
+                        streak.insert(0, streak[0] - 1)
+                    elif streak[-1] + 1 < len(diagonal):
+                        if diagonal[streak[-1]] == diagonal[streak[-1] + 1]:
+                            streak.append(streak[-1] + 1)
+                        else:
+                            break
                     else:
                         break
                 if len(streak) == self.WIN_NUMBER:
                     return True
-
-
 
     def get_diagonals(self):
         reverse_board = []
@@ -156,7 +148,6 @@ class Game:
                 diagonal_list.append(line_list_left)
         return diagonal_list
 
-
     def get_player_at(self, row, col):
         result = self.board[row][col]
         if result == self.BLANK:
@@ -179,12 +170,3 @@ class Game:
         print('   '.join(str(x) for x in range(self.COLUMNS)))
         for row in self.board:
             print('   '.join(str(row[x]) for x in range(self.COLUMNS)))
-            #print(row)
-
-game1 = Game()
-game1.__repr__()
-while True:
-    game1.make_move(int(input("column")))
-    game1.__repr__()
-    game1.get_winner()
-    game1.switch_player()
