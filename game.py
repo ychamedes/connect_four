@@ -46,6 +46,8 @@ class Game:
         winner = None
         if self.check_winner_horizontal() or self.check_winner_diagonal() or \
                 self.check_winner_vertical():
+            print(self.check_winner_horizontal(),
+                  self.check_winner_diagonal(), self.check_winner_vertical())
             print("winner")
             winner = self.current_player
         if self.number_of_moves == self.max_moves:
@@ -54,8 +56,11 @@ class Game:
 
         return winner
 
-    def check_winner_horizontal(self):
-        for row in self.board:
+    def check_winner_horizontal(self, *args):
+        board = self.board
+        if args:
+            board = list(args)[0]
+        for row in board:
             streak = []
             if row[self.MIDDLE_OF_ROW] != self.BLANK:
                 streak.append(self.MIDDLE_OF_ROW)
@@ -66,16 +71,21 @@ class Game:
                         streak.insert(0, streak[0] - 1)
                     elif row[streak[-1]] == row[streak[-1] + 1]:
                         streak.append(streak[-1] + 1)
+                        # print(row[streak[-1]] == row[streak[-1] + 1],
+                        #       row[streak[-1]], row[streak[-1] + 1])
                     else:
                         break
                 if len(streak) == self.WIN_NUMBER:
                     return True
 
-    def check_winner_vertical(self):
+    def check_winner_vertical(self, *args):
+        board = self.board
+        if args:
+            board = list(args)[0]
         column_matrix = []
         for column in range(self.COLUMNS):
             column_list = []
-            for row in self.board:
+            for row in board:
                 column_list.append(row[column])
             column_matrix.append(column_list)
         for row in column_matrix:
@@ -94,8 +104,11 @@ class Game:
                 if len(streak) == self.WIN_NUMBER:
                     return True
 
-    def check_winner_diagonal(self):
-        diagonal_list = self.get_diagonals()
+    def check_winner_diagonal(self, *args):
+        if args:
+            diagonal_list = self.get_diagonals(list(args)[0])
+        else:
+            diagonal_list = self.get_diagonals()
         for diagonal in diagonal_list:
             streak = []
             if diagonal[len(diagonal) // 2] != self.BLANK:
@@ -115,9 +128,12 @@ class Game:
                 if len(streak) == self.WIN_NUMBER:
                     return True
 
-    def get_diagonals(self):
+    def get_diagonals(self, *args):
+        board = self.board
+        if args:
+            board = list(args)[0]
         reverse_board = []
-        for row in self.board:
+        for row in board:
             reverse_board.append(row[::-1])
         diagonal_list = []
         for line in range(self.ROWS - 1):
@@ -125,7 +141,7 @@ class Game:
             line_list_left = []
             column = 0
             while line >= 0 and column <= self.COLUMNS:
-                line_list_right.append(self.board[line][column])
+                line_list_right.append(board[line][column])
                 line_list_left.append(reverse_board[line][column])
                 line -= 1
                 column += 1
@@ -138,7 +154,7 @@ class Game:
             line_list_right = []
             line_list_left = []
             while column < self.COLUMNS:
-                line_list_right.append(self.board[line][column])
+                line_list_right.append(board[line][column])
                 line_list_left.append(reverse_board[line][column])
                 line -= 1
                 column += 1
