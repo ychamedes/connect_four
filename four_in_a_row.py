@@ -36,12 +36,12 @@ class GameBoard:
             # Check which player added the piece and add respective piece.
             if self._game.current_player == PLAYER_1:
                 player_1_piece = tki.Label(root, image = player_1_piece_img,
-                                           bg="blue")
+                                           bg="blue", borderwidth = 0))
                 player_1_piece.image = player_1_piece_img
                 player_1_piece.grid(row = x_coord, column = y_coord)
             elif self._game.current_player == PLAYER_2:
                 player_2_piece = tki.Label(root, image = player_2_piece_img,
-                                           bg="blue")
+                                           bg="blue", borderwidth = 0))
                 player_2_piece.image = player_2_piece_img
                 player_2_piece.grid(row = x_coord, column = y_coord)
         
