@@ -35,10 +35,12 @@ class Game:
                     raise Exception("Illegal Move!")
                 else:
                     self.board[row - 1][column] = current_color
+                    return (row - 1, column)
                     break
             else:
                 if row == self.ROWS - 1:
                     self.board[row][column] = current_color
+                    return (row, column)
                 else:
                     continue
 
