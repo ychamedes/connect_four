@@ -183,6 +183,7 @@ class Game:
             return
 
     def __repr__(self):
+        print('-------------------------')
         print('   '.join(str(x) for x in range(self.COLUMNS)))
         for row in self.board:
             print('   '.join(str(row[x]) for x in range(self.COLUMNS)))
