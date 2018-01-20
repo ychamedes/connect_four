@@ -1,4 +1,3 @@
-
 class Game:
     PLAYER_ONE = 0
     PLAYER_TWO = 1
@@ -36,7 +35,6 @@ class Game:
                 else:
                     self.board[row - 1][column] = current_color
                     return (row - 1, column)
-                    break
             else:
                 if row == self.ROWS - 1:
                     self.board[row][column] = current_color
@@ -48,21 +46,13 @@ class Game:
         winner = None
         if self.check_winner_horizontal() or self.check_winner_diagonal() or \
                 self.check_winner_vertical():
-            print(self.check_winner_horizontal(),
-                  self.check_winner_diagonal(), self.check_winner_vertical())
-            print("winner")
             winner = self.current_player
         if self.number_of_moves == self.max_moves:
-            print("draw")
             return Game.DRAW
-
         return winner
 
-    def check_winner_horizontal(self, *args):
-        board = self.board
-        if args:
-            board = list(args)[0]
-        for row in board:
+    def check_winner_horizontal(self):
+        for row in self.board:
             streak = []
             if row[self.MIDDLE_OF_ROW] != self.BLANK:
                 streak.append(self.MIDDLE_OF_ROW)
@@ -73,21 +63,16 @@ class Game:
                         streak.insert(0, streak[0] - 1)
                     elif row[streak[-1]] == row[streak[-1] + 1]:
                         streak.append(streak[-1] + 1)
-                        # print(row[streak[-1]] == row[streak[-1] + 1],
-                        #       row[streak[-1]], row[streak[-1] + 1])
                     else:
                         break
                 if len(streak) == self.WIN_NUMBER:
                     return True
 
-    def check_winner_vertical(self, *args):
-        board = self.board
-        if args:
-            board = list(args)[0]
+    def check_winner_vertical(self):
         column_matrix = []
         for column in range(self.COLUMNS):
             column_list = []
-            for row in board:
+            for row in self.board:
                 column_list.append(row[column])
             column_matrix.append(column_list)
         for row in column_matrix:
@@ -106,11 +91,8 @@ class Game:
                 if len(streak) == self.WIN_NUMBER:
                     return True
 
-    def check_winner_diagonal(self, *args):
-        if args:
-            diagonal_list = self.get_diagonals(list(args)[0])
-        else:
-            diagonal_list = self.get_diagonals()
+    def check_winner_diagonal(self):
+        diagonal_list = self.get_diagonals()
         for diagonal in diagonal_list:
             streak = []
             if diagonal[len(diagonal) // 2] != self.BLANK:
@@ -130,12 +112,9 @@ class Game:
                 if len(streak) == self.WIN_NUMBER:
                     return True
 
-    def get_diagonals(self, *args):
-        board = self.board
-        if args:
-            board = list(args)[0]
+    def get_diagonals(self):
         reverse_board = []
-        for row in board:
+        for row in self.board:
             reverse_board.append(row[::-1])
         diagonal_list = []
         for line in range(self.ROWS - 1):
@@ -143,7 +122,7 @@ class Game:
             line_list_left = []
             column = 0
             while line >= 0 and column <= self.COLUMNS:
-                line_list_right.append(board[line][column])
+                line_list_right.append(self.board[line][column])
                 line_list_left.append(reverse_board[line][column])
                 line -= 1
                 column += 1
@@ -156,7 +135,7 @@ class Game:
             line_list_right = []
             line_list_left = []
             while column < self.COLUMNS:
-                line_list_right.append(board[line][column])
+                line_list_right.append(self.board[line][column])
                 line_list_left.append(reverse_board[line][column])
                 line -= 1
                 column += 1
@@ -185,7 +164,6 @@ class Game:
             return
 
     def __repr__(self):
-        print('-------------------------')
         print('   '.join(str(x) for x in range(self.COLUMNS)))
         for row in self.board:
             print('   '.join(str(row[x]) for x in range(self.COLUMNS)))
