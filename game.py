@@ -100,7 +100,8 @@ class Game:
                 # Compare first and last elements of streak with neighboring
                 #  spaces in the column.
                 while len(streak) < self.WIN_NUMBER:
-                    if diagonal[streak[0]] == diagonal[streak[0] - 1]:
+                    if diagonal[streak[0]] == diagonal[streak[0] - 1] and \
+                            streak[0] -1 >= 0:
                         streak.insert(0, streak[0] - 1)
                     elif streak[-1] + 1 < len(diagonal):
                         if diagonal[streak[-1]] == diagonal[streak[-1] + 1]:
