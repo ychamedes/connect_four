@@ -12,7 +12,6 @@ PLAYER_2 = 1
 P1_WIN_MSG = "Red wins!"
 P2_WIN_MSG = "Yellow wins!"
 DRAW_MSG = "It's a draw!"
-DISABLE_MESSAGE = "Disable"
 
 
 class GameBoard:
@@ -20,13 +19,15 @@ class GameBoard:
         self._root = root
         self._game = game
         self._ai = ai
-        self._player1 = True
+        self._player1 = False
         self._player2 = False
+        self._my_turn = True
         self.__communicator = communicator
         self.__communicator.connect()
         self.__communicator.bind_action_to_message(self.__handle_message)
         self.__build_board()
         self._root.title("Connect Four")
+
 
     def __build_board(self):
 
@@ -48,17 +49,30 @@ class GameBoard:
                     tile.image = background_tile_img
                     tile.grid(row=i, column=j)
 
-            self.play_game()
+    def _ai_turn(self):
+        # Check if AI player.
+        if self._my_turn:
+            if (self._game.current_player == self._game.PLAYER_ONE and
+                    self._player1) or (self._game.current_player ==
+                                           self._game.PLAYER_TWO and self._player2):
+                self.__communicator.send_message(self._ai.find_legal_move(self._game, self.__update_board))
+                winner = self._game.get_winner()
+                if winner is not None:
+                    self._end_game(winner)
+                self._my_turn = False
+                self._game.switch_player()
 
     def __make_button(self, column_coord):
 
         def __add_piece():
-            self.__update_board(column_coord)
-            self.__communicator.send_message(column_coord)
-            winner = self._game.get_winner()
-            if winner is not None:
-                self._end_game(winner)
-            self._game.switch_player()
+            if self._my_turn:
+                self.__update_board(column_coord)
+                self.__communicator.send_message(column_coord)
+                winner = self._game.get_winner()
+                if winner is not None:
+                    self._end_game(winner)
+                self._my_turn = False
+                self._game.switch_player()
 
 
         return __add_piece
@@ -84,11 +98,6 @@ class GameBoard:
             player_2_piece.grid(row=self.__y_coord,
                                 column=self.__x_coord)
 
-    def play_game(self):
-        # Check if AI player.
-        #        if self._game.current_player == self._player1:
-        #            self._ai.find_legal_move(self._game, self.__update_board())
-        pass
 
     def _end_game(self, winner):
         # Check for winner and end game if there is one (or draw).
@@ -101,7 +110,7 @@ class GameBoard:
         # Disable any more pieces being added to the board.
         for button in self.__buttons:
             button.config(state="disabled")
-        self.__communicator.send_message(DISABLE_MESSAGE)
+
 
     def _end_message(self, message):
         self._message_box = tki.Toplevel()
@@ -111,14 +120,14 @@ class GameBoard:
         self.__message_display.insert(0, message)
 
     def __handle_message(self, message):
-        if message[1:] == DISABLE_MESSAGE:
-            print("disabling")
-            for button in self.__buttons:
-                button.config(state="disabled")
-        else:
-            message = int(message)
-            self.__update_board(message)
-            self._game.switch_player()
+        message = int(message)
+        self.__update_board(message)
+        winner = self._game.get_winner()
+        if winner is not None:
+            self._end_game(winner)
+        self._my_turn = True
+        self._game.switch_player()
+        self._ai_turn()
 
 
 if __name__ == "__main__":
@@ -126,8 +135,8 @@ if __name__ == "__main__":
     ai = AI()
     root = tki.Tk()
     port = 8000
-    var = 1
-    if var == 0:
+    var = 0
+    if var == 1:
         server = True
     else:
         server = False
@@ -146,4 +155,3 @@ if __name__ == "__main__":
         gb = GameBoard(root, game1, ai, com)
 
     root.mainloop()
-    
