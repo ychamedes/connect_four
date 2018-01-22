@@ -52,9 +52,9 @@ class GameBoard:
     def _ai_turn(self):
         # Check if AI player.
         if self._my_turn:
-            if (self._game.current_player == self._game.PLAYER_ONE and
+            if (self._game.current_player == self._game.PLAYER_ONE and not
                     self._player1) or (self._game.current_player ==
-                                           self._game.PLAYER_TWO and self._player2):
+                                           self._game.PLAYER_TWO and not self._player2):
                 self.__communicator.send_message(self._ai.find_legal_move(self._game, self.__update_board))
                 winner = self._game.get_winner()
                 if winner is not None:
