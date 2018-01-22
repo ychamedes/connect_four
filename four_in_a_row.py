@@ -9,8 +9,11 @@ BOARD_ROWS = 6
 BUTTONS_ROW = 1
 PLAYER_1 = 0
 PLAYER_2 = 1
+BG_COLOR = "blue"
 P1_WIN_MSG = "Red wins!"
 P2_WIN_MSG = "Yellow wins!"
+P1_COLOR = "red"
+P2_COLOR = "yellow"
 DRAW_MSG = "It's a draw!"
 
 
@@ -19,8 +22,8 @@ class GameBoard:
         self._root = root
         self._game = game
         self._ai = ai
-        self._player1 = False
-        self._player2 = False
+        self._player1 = True
+        self._player2 = True
         self._my_turn = True
         self.__communicator = communicator
         self.__communicator.connect()
@@ -45,7 +48,7 @@ class GameBoard:
                 # Add blank tiles on rest of board.
                 else:
                     tile = tki.Label(root, image=background_tile_img,
-                                     bg="blue", borderwidth=0)
+                                     bg=BG_COLOR, borderwidth=0)
                     tile.image = background_tile_img
                     tile.grid(row=i, column=j)
 
@@ -87,13 +90,13 @@ class GameBoard:
         # Check which player added the piece and add respective piece.
         if self._game.current_player == PLAYER_1:
             player_1_piece = tki.Label(root, image=player_1_piece_img,
-                                       bg="blue", borderwidth=0)
+                                       bg=BG_COLOR, borderwidth=0)
             player_1_piece.image = player_1_piece_img
             player_1_piece.grid(row=self.__y_coord,
                                 column=self.__x_coord)
         elif self._game.current_player == PLAYER_2:
             player_2_piece = tki.Label(root, image=player_2_piece_img,
-                                       bg="blue", borderwidth=0)
+                                       bg=BG_COLOR, borderwidth=0)
             player_2_piece.image = player_2_piece_img
             player_2_piece.grid(row=self.__y_coord,
                                 column=self.__x_coord)
@@ -104,20 +107,21 @@ class GameBoard:
         if winner == self._game.DRAW:
             self._end_message(DRAW_MSG)
         elif winner == PLAYER_1:
-            self._end_message(P1_WIN_MSG)
+            self._end_message(P1_WIN_MSG, P1_COLOR)
         elif winner == PLAYER_2:
-            self._end_message(P2_WIN_MSG)
+            self._end_message(P2_WIN_MSG, P2_COLOR)
         # Disable any more pieces being added to the board.
         for button in self.__buttons:
             button.config(state="disabled")
 
 
-    def _end_message(self, message):
-        self._message_box = tki.Toplevel()
-        self.__message_display = tki.Entry(self._message_box, justify="center",
-                                           width=50)
-        self.__message_display.pack()
-        self.__message_display.insert(0, message)
+    def _end_message(self, message, color="black"):
+        self.__message_display = tki.Label(self._root, text= message,
+                                           justify="center",
+                                           font=("Comic Sans MS", 20),
+                                           fg=color, bg=BG_COLOR)
+        self.__message_display.grid(row=0, columnspan=BOARD_COLUMNS,
+                                    sticky=tki.W+tki.E+tki.N+tki.S)
 
     def __handle_message(self, message):
         message = int(message)
