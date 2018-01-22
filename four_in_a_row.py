@@ -1,4 +1,3 @@
-import sys
 import tkinter as tki
 import socket
 from communicator import Communicator
@@ -13,6 +12,7 @@ PLAYER_2 = 1
 P1_WIN_MSG = "Red wins!"
 P2_WIN_MSG = "Yellow wins!"
 DRAW_MSG = "It's a draw!"
+DISABLE_MESSAGE = "Disable"
 
 
 class GameBoard:
@@ -29,16 +29,16 @@ class GameBoard:
         self._root.title("Connect Four")
 
     def __build_board(self):
-        
+
         self.__buttons = []
-        
+
         for i in range(BOARD_ROWS + BUTTONS_ROW):
             for j in range(BOARD_COLUMNS):
                 # Row of buttons to add piece in respective column.
                 if i == 0:
                     button = tki.Button(self._root, text=j,
-                                              height=1, width=10,
-                                              command=self.__make_button(j))
+                                        height=1, width=10,
+                                        command=self.__make_button(j))
                     button.grid(row=i, column=j)
                     self.__buttons.append(button)
                 # Add blank tiles on rest of board.
@@ -55,15 +55,16 @@ class GameBoard:
         def __add_piece():
             self.__update_board(column_coord)
             self.__communicator.send_message(column_coord)
-            self._game.switch_player()
             winner = self._game.get_winner()
             if winner is not None:
                 self._end_game(winner)
+            self._game.switch_player()
+
 
         return __add_piece
-    
+
     def __update_board(self, column_coord):
-        
+
         # Get coordinates of new move (if legal) and adjust to board with
         # buttons row.
         self.__y_coord, self.__x_coord = self._game.make_move(column_coord)
@@ -75,18 +76,18 @@ class GameBoard:
                                        bg="blue", borderwidth=0)
             player_1_piece.image = player_1_piece_img
             player_1_piece.grid(row=self.__y_coord,
-                                       column=self.__x_coord)
+                                column=self.__x_coord)
         elif self._game.current_player == PLAYER_2:
             player_2_piece = tki.Label(root, image=player_2_piece_img,
                                        bg="blue", borderwidth=0)
             player_2_piece.image = player_2_piece_img
             player_2_piece.grid(row=self.__y_coord,
-                                       column=self.__x_coord)
+                                column=self.__x_coord)
 
     def play_game(self):
         # Check if AI player.
-#        if self._game.current_player == self._player1:
-#            self._ai.find_legal_move(self._game, self.__update_board())
+        #        if self._game.current_player == self._player1:
+        #            self._ai.find_legal_move(self._game, self.__update_board())
         pass
 
     def _end_game(self, winner):
@@ -100,38 +101,42 @@ class GameBoard:
         # Disable any more pieces being added to the board.
         for button in self.__buttons:
             button.config(state="disabled")
-
+        self.__communicator.send_message(DISABLE_MESSAGE)
 
     def _end_message(self, message):
         self._message_box = tki.Toplevel()
         self.__message_display = tki.Entry(self._message_box, justify="center",
-                                    width=50)
+                                           width=50)
         self.__message_display.pack()
         self.__message_display.insert(0, message)
 
-
     def __handle_message(self, message):
-        print("hi")
-#        message = int(message)
-        self._end_message(message)
-        self.__update_board(message)
-        self._game.switch_player()
-        
-            
+        if message[1:] == DISABLE_MESSAGE:
+            print("disabling")
+            for button in self.__buttons:
+                button.config(state="disabled")
+        else:
+            message = int(message)
+            self.__update_board(message)
+            self._game.switch_player()
+
 
 if __name__ == "__main__":
     game1 = Game()
     ai = AI()
     root = tki.Tk()
     port = 8000
-    server = sys.argv[1]
-#    server = True
-    
+    var = 1
+    if var == 0:
+        server = True
+    else:
+        server = False
+
     # Load icons of pieces.
     background_tile_img = tki.PhotoImage(file="blank_tile.gif")
     player_1_piece_img = tki.PhotoImage(file="red_piece.gif")
     player_2_piece_img = tki.PhotoImage(file="yellow_piece.gif")
-    
+
     if server:
         com = Communicator(root, port)
         gb = GameBoard(root, game1, ai, com)
@@ -141,3 +146,4 @@ if __name__ == "__main__":
         gb = GameBoard(root, game1, ai, com)
 
     root.mainloop()
+    
