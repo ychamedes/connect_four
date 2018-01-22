@@ -12,12 +12,17 @@ class AI:
 
     def find_legal_move(self, g, func, timeout=None):
         if self.winning_move(g) is not None:
-            func(self.winning_move(g))
+            winning_move = self.winning_move(g)
+            func(winning_move)
+            return winning_move
         elif self.blocking_move(g) is not None:
-            func(self.blocking_move(g))
+            blocking_move = self.blocking_move(g)
+            func(blocking_move)
+            return blocking_move
         else:
             basic_move = self.basic_move(g)
             func(basic_move)
+            return basic_move
 
     def winning_move(self, g):
         for move in range(self.choices):
@@ -33,6 +38,7 @@ class AI:
             if g.check_winner_horizontal(test_board) or \
                     g.check_winner_vertical(test_board) or \
                     g.check_winner_diagonal(test_board):
+                print("blocking move")
                 return move
 
 
