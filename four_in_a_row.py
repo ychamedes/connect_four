@@ -123,12 +123,14 @@ class GameBoard:
         self.__message_display.grid(row=0, columnspan=BOARD_COLUMNS,
                                     sticky=tki.W+tki.E+tki.N+tki.S)
 
+    
     def __handle_message(self, message):
         message = int(message)
         self.__update_board(message)
         winner = self._game.get_winner()
         if winner is not None:
             self._end_game(winner)
+            return
         self._my_turn = True
         self._game.switch_player()
         self._ai_turn()
