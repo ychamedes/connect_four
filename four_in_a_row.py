@@ -23,7 +23,7 @@ class GameBoard:
         self._game = game
         self._ai = ai
         self._player1 = True
-        self._player2 = False
+        self._player2 = True
         self.__communicator = communicator
         self.__communicator.connect()
         self.__communicator.bind_action_to_message(self.__handle_message)
@@ -33,6 +33,7 @@ class GameBoard:
             self._my_turn = True
         else:
             self._my_turn = False
+        self._ai_turn()
 
 
     def __build_board(self):
@@ -66,8 +67,7 @@ class GameBoard:
                 winner = self._game.get_winner()
                 if winner is not None:
                     self._end_game(winner)
-                self._my_turn = False
-                self.__next_move()
+                self.__next_move(False)
 
     def __make_button(self, column_coord):
 
@@ -78,8 +78,7 @@ class GameBoard:
                 winner = self._game.get_winner()
                 if winner is not None:
                     self._end_game(winner)
-                self._my_turn = False
-                self.__next_move()
+                self.__next_move(False)
 
 
         return __add_piece
@@ -105,9 +104,10 @@ class GameBoard:
             player_2_piece.grid(row=self.__y_coord,
                                 column=self.__x_coord)
 
-    def __next_move(self):
+    def __next_move(self, is_turn):
 
         self._game.switch_player()
+        self._my_turn = is_turn
         if self._game.current_player == PLAYER_1:
             for button in self.__buttons:
                 button.config(bg=P1_COLOR)
@@ -144,8 +144,7 @@ class GameBoard:
         if winner is not None:
             self._end_game(winner)
             return
-        self._my_turn = True
-        self.__next_move()
+        self.__next_move(True)
         self._ai_turn()
 
 
@@ -174,3 +173,19 @@ if __name__ == "__main__":
         gb = GameBoard(root, game1, ai, com, False)
 
     root.mainloop()
+
+
+# Tasks:
+# 1. Debugging:
+#   - Illegal move crashes game
+#
+# 2. Design:
+# 	- Gameplay: Assign players (human or AI) from sys.argv
+# 	- GUI: Scroll over with buttons
+# 	- GUI: Highlight winning move (not sure how to do this simply)
+#
+# 3. Documentation:
+# 	- Docstrings for all functions
+# 	- Add comments
+# 	- Get rid of unnecessary code (disabling buttons?)
+# 	- Clean up Game class to proper OOP notation
