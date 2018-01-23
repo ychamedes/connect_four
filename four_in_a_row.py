@@ -18,18 +18,21 @@ DRAW_MSG = "It's a draw!"
 
 
 class GameBoard:
-    def __init__(self, root, game, ai, communicator):
+    def __init__(self, root, game, ai, communicator, server_status):
         self._root = root
         self._game = game
         self._ai = ai
         self._player1 = True
         self._player2 = True
-        self._my_turn = True
         self.__communicator = communicator
         self.__communicator.connect()
         self.__communicator.bind_action_to_message(self.__handle_message)
         self.__build_board()
         self._root.title("Connect Four")
+        if server_status:
+            self._my_turn = True
+        else:
+            self._my_turn = False
 
 
     def __build_board(self):
@@ -123,7 +126,6 @@ class GameBoard:
         self.__message_display.grid(row=0, columnspan=BOARD_COLUMNS,
                                     sticky=tki.W+tki.E+tki.N+tki.S)
 
-    
     def __handle_message(self, message):
         message = int(message)
         self.__update_board(message)
@@ -141,7 +143,7 @@ if __name__ == "__main__":
     ai = AI()
     root = tki.Tk()
     port = 8000
-    var = 0
+    var = 1
     if var == 1:
         server = True
     else:
@@ -154,10 +156,10 @@ if __name__ == "__main__":
 
     if server:
         com = Communicator(root, port)
-        gb = GameBoard(root, game1, ai, com)
+        gb = GameBoard(root, game1, ai, com, True)
     else:
         ip = socket.gethostbyname(socket.gethostname())
         com = Communicator(root, port, ip)
-        gb = GameBoard(root, game1, ai, com)
+        gb = GameBoard(root, game1, ai, com, False)
 
     root.mainloop()
