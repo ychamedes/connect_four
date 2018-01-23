@@ -23,7 +23,7 @@ class GameBoard:
         self._game = game
         self._ai = ai
         self._player1 = True
-        self._player2 = True
+        self._player2 = False
         self.__communicator = communicator
         self.__communicator.connect()
         self.__communicator.bind_action_to_message(self.__handle_message)
@@ -43,9 +43,10 @@ class GameBoard:
             for j in range(BOARD_COLUMNS):
                 # Row of buttons to add piece in respective column.
                 if i == 0:
-                    button = tki.Button(self._root, text=j,
-                                        height=1, width=10,
+                    button = tki.Button(self._root, height=3, width=10,
                                         command=self.__make_button(j))
+                    if self._game.current_player == PLAYER_1:
+                        button.config(bg=P1_COLOR)
                     button.grid(row=i, column=j)
                     self.__buttons.append(button)
                 # Add blank tiles on rest of board.
@@ -66,7 +67,7 @@ class GameBoard:
                 if winner is not None:
                     self._end_game(winner)
                 self._my_turn = False
-                self._game.switch_player()
+                self.__next_move()
 
     def __make_button(self, column_coord):
 
@@ -78,7 +79,7 @@ class GameBoard:
                 if winner is not None:
                     self._end_game(winner)
                 self._my_turn = False
-                self._game.switch_player()
+                self.__next_move()
 
 
         return __add_piece
@@ -103,6 +104,16 @@ class GameBoard:
             player_2_piece.image = player_2_piece_img
             player_2_piece.grid(row=self.__y_coord,
                                 column=self.__x_coord)
+
+    def __next_move(self):
+
+        self._game.switch_player()
+        if self._game.current_player == PLAYER_1:
+            for button in self.__buttons:
+                button.config(bg=P1_COLOR)
+        elif self._game.current_player == PLAYER_2:
+            for button in self.__buttons:
+                button.config(bg=P2_COLOR)
 
 
     def _end_game(self, winner):
@@ -134,7 +145,7 @@ class GameBoard:
             self._end_game(winner)
             return
         self._my_turn = True
-        self._game.switch_player()
+        self.__next_move()
         self._ai_turn()
 
 
