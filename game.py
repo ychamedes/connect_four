@@ -27,6 +27,7 @@ class Game:
         current_color = self.get_current_player()
         self.number_of_moves += 1
         if column not in range(self.COLUMNS):
+            print(column, range(self.COLUMNS), type(column))
             raise Exception("Illegal Move!")
         for row in range(self.ROWS):
             if self.board[row][column] != self.BLANK:
@@ -47,7 +48,6 @@ class Game:
         if self.check_winner_horizontal() or self.check_winner_diagonal() or \
                 self.check_winner_vertical():
             winner = self.current_player
-            print("winner")
         if self.number_of_moves == self.max_moves:
             return Game.DRAW
         return winner
@@ -63,14 +63,17 @@ class Game:
                 # Compare first and last elements of streak with neighboring
                 #  spaces in the row.
                 while len(streak) < self.WIN_NUMBER:
-                    if row[streak[0]] == row[streak[0] - 1]:
-                        streak.insert(0, streak[0] - 1)
-                    elif row[streak[-1]] == row[streak[-1] + 1]:
-                        streak.append(streak[-1] + 1)
+                    if streak[0] - 1 >= 0:
+                        if row[streak[0]] == row[streak[0] - 1]:
+                            streak.insert(0, streak[0] - 1)
+                    elif streak[-1] + 1 < len(row):
+                            if row[streak[-1]] == row[streak[-1] + 1]:
+                                streak.append(streak[-1] + 1)
                     else:
                         break
-                    if len(streak) == self.WIN_NUMBER:
-                        return True
+                if len(streak) == self.WIN_NUMBER:
+                    print(streak, row, "horiontal")
+                    return True
 
     def check_winner_vertical(self, *args):
         board = self.board
@@ -89,13 +92,16 @@ class Game:
                 # Compare first and last elements of streak with neighboring
                 #  spaces in the column.
                 while len(streak) < self.WIN_NUMBER:
-                    if row[streak[0]] == row[streak[0] - 1]:
-                        streak.insert(0, streak[0] - 1)
-                    elif row[streak[-1]] == row[streak[-1] + 1]:
-                        streak.append(streak[-1] + 1)
+                    if streak[0] - 1 >= 0:
+                        if row[streak[0]] == row[streak[0] - 1]:
+                            streak.insert(0, streak[0] - 1)
+                    elif streak[-1] + 1 < len(row):
+                        if row[streak[-1]] == row[streak[-1] + 1]:
+                            streak.append(streak[-1] + 1)
                     else:
                         break
                 if len(streak) == self.WIN_NUMBER:
+                    print(streak, row, "vertical")
                     return True
 
     def check_winner_diagonal(self, *args):
@@ -110,8 +116,9 @@ class Game:
                 # Compare first and last elements of streak with neighboring
                 #  spaces in the column.
                 while len(streak) < self.WIN_NUMBER:
-                    if diagonal[streak[0]] == diagonal[streak[0] - 1]:
-                        streak.insert(0, streak[0] - 1)
+                    if streak[0] - 1 >= 0:
+                        if diagonal[streak[0]] == diagonal[streak[0] - 1]:
+                            streak.insert(0, streak[0] - 1)
                     elif streak[-1] + 1 < len(diagonal):
                         if diagonal[streak[-1]] == diagonal[streak[-1] + 1]:
                             streak.append(streak[-1] + 1)
@@ -120,6 +127,7 @@ class Game:
                     else:
                         break
                 if len(streak) == self.WIN_NUMBER:
+                    print(streak, diagonal, "diagonal")
                     return True
 
     def get_diagonals(self, *args):
